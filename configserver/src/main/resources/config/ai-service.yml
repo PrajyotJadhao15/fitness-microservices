@@ -1,0 +1,61 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://mongodb:27017/AIRECOMMENDATION
+
+  kafka:
+    bootstrap-servers: kafka:9092
+    consumer:
+      group-id: activity_processor_group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: com.example.aiservice.model.Activity
+        spring.json.trusted.packages: "*"
+
+kafka:
+  topic:
+    name: activity_events
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+
+  endpoint:
+    health:
+      show-details: always
+
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+server:
+  port: 8083
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://eureka:8761/eureka/
+
+  instance:
+    preferIpAddress: true
+
+gemini:
+  api:
+    url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+    key: ${GEMINI_API_KEY}
+    
+resilience4j:
+  circuitbreaker:
+    instances:
+      geminiApi:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 30s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
