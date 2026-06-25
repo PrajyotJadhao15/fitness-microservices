@@ -5,12 +5,9 @@ eureka:
     service-url:
       defaultZone: http://eureka:8761/eureka/
 
-
 spring:
   application:
     name: api-gateway
-
-
 
   redis:
     host: redis
@@ -20,7 +17,9 @@ spring:
     gateway:
       routes:
 
+        # =========================
         # USER SERVICE
+        # =========================
         - id: user-service
           uri: lb://USER-SERVICE
           predicates:
@@ -28,11 +27,13 @@ spring:
           filters:
             - name: RequestRateLimiter
               args:
-                redis-rate-limiter.replenishRate: 1     # tokens per second
-                redis-rate-limiter.burstCapacity: 1    # bucket size
+                redis-rate-limiter.replenishRate: 1
+                redis-rate-limiter.burstCapacity: 1
                 key-resolver: "#{@userKeyResolver}"
 
+        # =========================
         # ACTIVITY SERVICE
+        # =========================
         - id: activity-service
           uri: lb://ACTIVITY-SERVICE
           predicates:
@@ -44,7 +45,9 @@ spring:
                 redis-rate-limiter.burstCapacity: 5
                 key-resolver: "#{@userKeyResolver}"
 
+        # =========================
         # AI SERVICE
+        # =========================
         - id: ai-service
           uri: lb://AI-SERVICE
           predicates:
@@ -56,9 +59,26 @@ spring:
                 redis-rate-limiter.burstCapacity: 4
                 key-resolver: "#{@userKeyResolver}"
 
+        # =========================
+        # SWAGGER DOCS ROUTES
+        # =========================
+        - id: user-service-docs
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/user-service/v3/api-docs
+
+        - id: activity-service-docs
+          uri: lb://ACTIVITY-SERVICE
+          predicates:
+            - Path=/activity-service/v3/api-docs
+
+        - id: ai-service-docs
+          uri: lb://AI-SERVICE
+          predicates:
+            - Path=/ai-service/v3/api-docs
+
 server:
   port: 8080
-
 
 management:
   endpoints:
@@ -73,3 +93,16 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - name: User Service
+        url: /user-service/v3/api-docs
+
+      - name: Activity Service
+        url: /activity-service/v3/api-docs
+
+      - name: AI Service
+        url: /ai-service/v3/api-docs
