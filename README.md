@@ -326,23 +326,45 @@ Implemented GitHub Actions for:
 
 ---
 
-# 📷 Screenshots
+## 📷 Screenshots
 
-## Architecture Diagram
+### 🏗️ Architecture Diagram
+![Architecture Diagram](Screenshots/Architecture%20Design.png)
 
-Add architecture diagram here
+---
 
-## Docker Containers
+### 🤖 AI Recommendation Response
+![Recommendation Response](Screenshots/Recommendation%20Response.png)
 
-Add Docker screenshot here
+---
 
-## Grafana Dashboard
+### 🐳 Docker Containers
+![Docker Containers](Screenshots/Docker%20Container.png)
 
-Add Grafana dashboard screenshot here
+---
 
-## Redis Cache Logs
+### 🌐 Eureka Server
+![Eureka](Screenshots/Eureka.png)
 
-Add cache hit/miss screenshot here
+---
+
+### 📊 Prometheus Metrics
+![Prometheus Metrics](Screenshots/Prometheus%20Metrics.png)
+
+---
+
+### 📈 Grafana Dashboard
+![Grafana Dashboard](Screenshots/Grafana%20DashBoard.png)
+
+---
+
+### ⚡ Redis Caching Logs
+![Caching Logs](Screenshots/Caching%20Logs.png)
+
+---
+
+### 📨 Kafka Logs
+![Kafka Logs](Screenshots/Kafka%20Logs.png)
 
 ---
 
