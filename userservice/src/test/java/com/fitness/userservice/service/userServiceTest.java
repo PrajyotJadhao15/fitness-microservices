@@ -13,8 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -91,6 +90,23 @@ public class userServiceTest{
         verify(userRepository)
                 .save(any(User.class));
 
+    }
+
+    @Test
+    void shouldThrowExceptionWhenEmailAlreadyExists() {
+
+        UserRequest userRequest=new UserRequest();
+        userRequest.setEmail("prajyotjadhao321@gmail.com");
+
+        when(userRepository.existsByEmail(userRequest.getEmail()))
+                .thenReturn(true);
+
+       RuntimeException ex = assertThrows(RuntimeException.class,
+               ()-> userService.register(userRequest));
+
+       assertEquals("Email Already Exist: "+ userRequest.getEmail(), ex.getMessage());
+
+       verify(userRepository).existsByEmail(userRequest.getEmail());
     }
 
 }
