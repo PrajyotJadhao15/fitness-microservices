@@ -5,6 +5,8 @@ import com.fitness.userservice.DTO.LoginRequest;
 import com.fitness.userservice.DTO.UserDTO;
 import com.fitness.userservice.DTO.UserRequest;
 import com.fitness.userservice.service.UserService;
+
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,6 +53,13 @@ public class UserController {
     public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO, @PathVariable Integer id){
 
        return new ResponseEntity<>(userService.updateUser(userDTO, id), HttpStatus.ACCEPTED);
+    }
+
+    @GetMapping("/fetchAll")
+    public ResponseEntity<Page<UserDTO>> fetchAll(@RequestParam int page,
+                                                  @RequestParam int pageSize){
+
+               return new ResponseEntity<>(userService.fetchAll(page, pageSize), HttpStatus.OK);
     }
 
 }

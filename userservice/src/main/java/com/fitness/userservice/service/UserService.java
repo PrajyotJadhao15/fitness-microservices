@@ -8,9 +8,17 @@ import com.fitness.userservice.model.User;
 import com.fitness.userservice.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import static io.lettuce.core.KillArgs.Builder.user;
+import static org.antlr.v4.runtime.tree.xpath.XPath.findAll;
 
 @Slf4j
 @Service
@@ -99,6 +107,15 @@ public class UserService {
 
         return savedDto;
 
+    }
+
+    public Page<UserDTO> fetchAll(int page, int pageSize) {
+
+        Pageable pageable = PageRequest.of(page, pageSize);
+
+
+        return userRepository.findAll(pageable)
+                .map(user -> modelMapper.map(user, UserDTO.class));
     }
 
 }
