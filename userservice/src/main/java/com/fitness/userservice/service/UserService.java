@@ -4,9 +4,11 @@ import com.fitness.userservice.DTO.AuthResponse;
 import com.fitness.userservice.DTO.LoginRequest;
 import com.fitness.userservice.DTO.UserDTO;
 import com.fitness.userservice.DTO.UserRequest;
+import com.fitness.userservice.exceptipns.EmailAlreadyExistsException;
 import com.fitness.userservice.model.User;
 import com.fitness.userservice.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.auth.InvalidCredentialsException;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -45,7 +47,7 @@ public class UserService {
 
         if(userRepository.existsByEmail(request.getEmail())){
 
-            throw new RuntimeException("Email Already Exist: "+request.getEmail());
+            throw new EmailAlreadyExistsException("Email Already Exist: "+request.getEmail());
         }
 
         User user = new User();
@@ -74,14 +76,15 @@ public class UserService {
    }
 
 
-    public AuthResponse login(LoginRequest request) {
+    public AuthResponse login(LoginRequest request) throws InvalidCredentialsException {
 
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException(request.getEmail()));
+
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
+            throw new InvalidCredentialsException("Invalid credentials");
         }
 
         String token = jwtService.generateToken(user.getEmail());
@@ -92,7 +95,8 @@ public class UserService {
 
     public UserDTO updateUser(UserDTO userDto, Integer id){
 
-         User user= userRepository.findById(id).orElseThrow(()-> new UsernameNotFoundException("User Not Found: "+ id));
+         User user= userRepository.findById(id).orElseThrow(
+                 ()-> new UsernameNotFoundException("User Not Found: "+ id));
 
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());

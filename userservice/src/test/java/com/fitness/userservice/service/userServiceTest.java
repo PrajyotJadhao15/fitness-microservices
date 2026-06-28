@@ -1,5 +1,7 @@
 package com.fitness.userservice.service;
 
+import com.fitness.userservice.DTO.AuthResponse;
+import com.fitness.userservice.DTO.LoginRequest;
 import com.fitness.userservice.DTO.UserDTO;
 import com.fitness.userservice.DTO.UserRequest;
 import com.fitness.userservice.model.User;
@@ -123,12 +125,6 @@ public class userServiceTest{
         UserDTO userDTO=new UserDTO();
         userDTO.setId(1);
 
-//        when(userRepository.findById(user.getId()))
-//                .thenReturn(Optional.of(user));
-//
-//        when(modelMapper.map(user, UserDTO.class))
-//                .thenReturn(userDTO);
-
         when(userCacheService.fetchByUserId(1))
                 .thenReturn(userDTO);
 
@@ -138,10 +134,46 @@ public class userServiceTest{
         assertNotNull(result);
         assertEquals(user.getId(), result.getId());
 
-//        verify(userRepository).findById(user.getId());
-//        verify(modelMapper).map(any(User.class), eq(UserDTO.class));
+
         verify(userCacheService).fetchByUserId(1);
 
+    }
+
+    @Test
+    public void shouldReturnJWTTokenWhenCredentialsAreValid(){
+
+            LoginRequest userRequest=new LoginRequest();
+
+        userRequest.setEmail("prajyotjadhao321@gmail.com");
+        userRequest.setPassword("Prajyot@321");
+
+
+        User user=new User();
+
+        user.setEmail(userRequest.getEmail());
+        user.setPassword(userRequest.getPassword());
+
+
+        when(userRepository.findByEmail(userRequest.getEmail()))
+                .thenReturn(Optional.of(user));
+
+        when(passwordEncoder.matches(userRequest.getPassword(), user.getPassword()))
+                .thenReturn(true);
+
+        when(jwtService.generateToken(user.getEmail()))
+                .thenReturn("JWT-TOKEN");
+
+
+        //Act
+        AuthResponse response=userService.login(userRequest);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals("JWT-TOKEN", response.getToken());
+
+        verify(userRepository).findByEmail(userRequest.getEmail());
+        verify(passwordEncoder).matches(userRequest.getPassword(), user.getPassword());
+        verify(jwtService).generateToken(user.getEmail());
     }
 
 
