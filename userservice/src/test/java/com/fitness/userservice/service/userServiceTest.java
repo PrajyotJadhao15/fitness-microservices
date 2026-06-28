@@ -13,11 +13,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @ExtendWith(MockitoExtension.class)
 public class userServiceTest{
@@ -109,4 +112,40 @@ public class userServiceTest{
        verify(userRepository).existsByEmail(userRequest.getEmail());
     }
 
+
+    @Test
+    public void shouldReturnUserWhenIdIsPresentInDb(){
+
+
+        User user =new User();
+        user.setId(1);
+
+        UserDTO userDTO=new UserDTO();
+        userDTO.setId(1);
+
+//        when(userRepository.findById(user.getId()))
+//                .thenReturn(Optional.of(user));
+//
+//        when(modelMapper.map(user, UserDTO.class))
+//                .thenReturn(userDTO);
+
+        when(userCacheService.fetchByUserId(1))
+                .thenReturn(userDTO);
+
+
+        UserDTO result = userService.fetchUserById(user.getId());
+
+        assertNotNull(result);
+        assertEquals(user.getId(), result.getId());
+
+//        verify(userRepository).findById(user.getId());
+//        verify(modelMapper).map(any(User.class), eq(UserDTO.class));
+        verify(userCacheService).fetchByUserId(1);
+
+    }
+
+
+
 }
+
+
