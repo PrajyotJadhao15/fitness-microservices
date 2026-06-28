@@ -111,7 +111,8 @@ public class UserService {
 
     public Page<UserDTO> fetchAll(int page, int pageSize) {
 
-        Pageable pageable = PageRequest.of(page, pageSize);
+        Pageable pageable = PageRequest.of(page, pageSize)
+                ;
 
 
         return userRepository.findAll(pageable)
